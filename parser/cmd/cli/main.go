@@ -11,7 +11,7 @@ import (
 	"github.com/FerdinaKusumah/excel2json"
 )
 
-type DataString struct {
+type LocationRaw struct {
 	Latitude                     string `json:"latitude"`
 	Longitude                    string `json:"longitude"`
 	Altitude                     string `json:"altitude"`
@@ -24,7 +24,7 @@ type DataString struct {
 	Activity                     string `json:"activity"`
 }
 
-type DataTyped struct {
+type LocationJson struct {
 	Latitude                     float64 `json:"latitude"`
 	Longitude                    float64 `json:"longitude"`
 	Altitude                     float64 `json:"altitude"`
@@ -37,17 +37,17 @@ type DataTyped struct {
 	Activity                     *string `json:"activity"`
 }
 
-type DataT struct {
-	Dev1  []DataTyped `json:"dev1"`
-	Dev2  []DataTyped `json:"dev2"`
-	Dev3  []DataTyped `json:"dev3"`
-	Dev4  []DataTyped `json:"dev4"`
-	Dev5  []DataTyped `json:"dev5"`
-	Dev6  []DataTyped `json:"dev6"`
-	Dev7  []DataTyped `json:"dev7"`
-	Dev8  []DataTyped `json:"dev8"`
-	Dev9  []DataTyped `json:"dev9"`
-	Dev10 []DataTyped `json:"dev10"`
+type Page struct {
+	Dev1  []LocationJson `json:"dev1"`
+	Dev2  []LocationJson `json:"dev2"`
+	Dev3  []LocationJson `json:"dev3"`
+	Dev4  []LocationJson `json:"dev4"`
+	Dev5  []LocationJson `json:"dev5"`
+	Dev6  []LocationJson `json:"dev6"`
+	Dev7  []LocationJson `json:"dev7"`
+	Dev8  []LocationJson `json:"dev8"`
+	Dev9  []LocationJson `json:"dev9"`
+	Dev10 []LocationJson `json:"dev10"`
 }
 
 func main() {
@@ -67,61 +67,61 @@ func main() {
 		results = append(results, result)
 	}
 
-	rawses := make([][]DataString, 10)
+	devs := make([][]LocationRaw, 10)
 
 	for i, val := range results {
-		var raws []DataString
+		var rows []LocationRaw
 		for _, v := range val {
 			result, _ := json.Marshal(v)
 
-			var data DataString
+			var row LocationRaw
 
-			if err := json.Unmarshal(result, &data); err != nil {
+			if err := json.Unmarshal(result, &row); err != nil {
 				panic("error unmarshaling")
 			}
 
-			raws = append(raws, data)
+			rows = append(rows, row)
 		}
-		rawses[i] = raws
+		devs[i] = rows
 	}
 
-	res := DataT{
-		Dev1:  make([]DataTyped, 0),
-		Dev2:  make([]DataTyped, 0),
-		Dev3:  make([]DataTyped, 0),
-		Dev4:  make([]DataTyped, 0),
-		Dev5:  make([]DataTyped, 0),
-		Dev6:  make([]DataTyped, 0),
-		Dev7:  make([]DataTyped, 0),
-		Dev8:  make([]DataTyped, 0),
-		Dev9:  make([]DataTyped, 0),
-		Dev10: make([]DataTyped, 0),
+	pages := Page{
+		Dev1:  make([]LocationJson, 0),
+		Dev2:  make([]LocationJson, 0),
+		Dev3:  make([]LocationJson, 0),
+		Dev4:  make([]LocationJson, 0),
+		Dev5:  make([]LocationJson, 0),
+		Dev6:  make([]LocationJson, 0),
+		Dev7:  make([]LocationJson, 0),
+		Dev8:  make([]LocationJson, 0),
+		Dev9:  make([]LocationJson, 0),
+		Dev10: make([]LocationJson, 0),
 	}
 	wg := &sync.WaitGroup{}
 	wg.Add(10)
-	go helper(rawses[0], &res.Dev1, wg)
-	go helper(rawses[1], &res.Dev2, wg)
-	go helper(rawses[2], &res.Dev3, wg)
-	go helper(rawses[3], &res.Dev4, wg)
-	go helper(rawses[4], &res.Dev5, wg)
-	go helper(rawses[5], &res.Dev6, wg)
-	go helper(rawses[6], &res.Dev7, wg)
-	go helper(rawses[7], &res.Dev8, wg)
-	go helper(rawses[8], &res.Dev9, wg)
-	go helper(rawses[9], &res.Dev10, wg)
+	go helper(devs[0], &pages.Dev1, wg)
+	go helper(devs[1], &pages.Dev2, wg)
+	go helper(devs[2], &pages.Dev3, wg)
+	go helper(devs[3], &pages.Dev4, wg)
+	go helper(devs[4], &pages.Dev5, wg)
+	go helper(devs[5], &pages.Dev6, wg)
+	go helper(devs[6], &pages.Dev7, wg)
+	go helper(devs[7], &pages.Dev8, wg)
+	go helper(devs[8], &pages.Dev9, wg)
+	go helper(devs[9], &pages.Dev10, wg)
 	wg.Wait()
 
-	bres, err := json.Marshal(&res)
+	bres, err := json.Marshal(&pages)
 	if err != nil {
 		panic("hi it is panic, i love panics")
 	}
 
-	if err := os.WriteFile("res.json", bres, 0644); err != nil {
+	if err := os.WriteFile("pages.json", bres, 0644); err != nil {
 		fmt.Println("errored due to: ", err.Error())
 	}
 }
 
-func helper(d []DataString, dev *[]DataTyped, wg *sync.WaitGroup) {
+func helper(d []LocationRaw, dev *[]LocationJson, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for i := range d {
 		latitude, _ := strconv.ParseFloat(d[i].Latitude, 64)
@@ -148,7 +148,7 @@ func helper(d []DataString, dev *[]DataTyped, wg *sync.WaitGroup) {
 			floorlable = &d[i].FloorLabel
 		}
 
-		temp := DataTyped{
+		temp := LocationJson{
 			Latitude:                     latitude,
 			Longitude:                    longitude,
 			Altitude:                     altitude,
