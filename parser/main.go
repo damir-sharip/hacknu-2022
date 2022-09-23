@@ -3,9 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"sync"
+
+	"github.com/FerdinaKusumah/excel2json"
 )
 
 type DataString struct {
@@ -14,10 +17,10 @@ type DataString struct {
 	Altitude                     string `json:"altitude"`
 	Identifier                   string `json:"identifier"`
 	Timestamp                    string `json:"timestamp"`
-	FloorLabel                   string `json:"floor_label"`
-	HorizontalAccuracy           string `json:"horizontal_accuracy"`
-	VerticalAccuracy             string `json:"vertical_accuracy"`
-	ConfidenceInLocationAccuracy string `json:"confidence_in_location_accuracy"`
+	FloorLabel                   string `json:"floorlabel"`
+	HorizontalAccuracy           string `json:"horizontalaccuracy"`
+	VerticalAccuracy             string `json:"verticalaccuracy"`
+	ConfidenceInLocationAccuracy string `json:"confidenceinlocationaccuracy"`
 	Activity                     string `json:"activity"`
 }
 
@@ -26,25 +29,12 @@ type DataTyped struct {
 	Longitude                    float64 `json:"longitude"`
 	Altitude                     float64 `json:"altitude"`
 	Identifier                   *string `json:"identifier"`
-	Timestamp                    int64   `json:"timestamp"`
-	FloorLabel                   *string `json:"floor_label"`
-	HorizontalAccuracy           float64 `json:"horizontal_accuracy"`
-	VerticalAccuracy             float64 `json:"vertical_accuracy"`
-	ConfidenceInLocationAccuracy float64 `json:"confidence_in_location_accuracy"`
+	Timestamp                    float64 `json:"timestamp"`
+	FloorLabel                   *string `json:"floorLabel"`
+	HorizontalAccuracy           float64 `json:"horizontalAccuracy"`
+	VerticalAccuracy             float64 `json:"verticalAccuracy"`
+	ConfidenceInLocationAccuracy float64 `json:"confidenceInLocationAccuracy"`
 	Activity                     *string `json:"activity"`
-}
-
-type Data struct {
-	Dev1  []DataString `json:"dev1"`
-	Dev2  []DataString `json:"dev2"`
-	Dev3  []DataString `json:"dev3"`
-	Dev4  []DataString `json:"dev4"`
-	Dev5  []DataString `json:"dev5"`
-	Dev6  []DataString `json:"dev6"`
-	Dev7  []DataString `json:"dev7"`
-	Dev8  []DataString `json:"dev8"`
-	Dev9  []DataString `json:"dev9"`
-	Dev10 []DataString `json:"dev10"`
 }
 
 type DataT struct {
@@ -61,14 +51,38 @@ type DataT struct {
 }
 
 func main() {
-	bdata, err := os.ReadFile("data.json")
-	if err != nil {
-		panic("err no file: " + err.Error())
-	}
-	var d Data
+	var (
+		result    []*map[string]interface{}
+		err       error
+		path      = "./hacknu-dev-data.xlsx"
+		sheetName = []string{"dev1", "dev2", "dev3", "dev4", "dev5", "dev6", "dev7", "dev8", "dev9", "dev10"}
+		headers   []string
+	)
 
-	if err := json.Unmarshal(bdata, &d); err != nil {
-		panic("error unmarshaling")
+	var results [][]*map[string]interface{}
+	for i := 0; i < 10; i++ {
+		if result, err = excel2json.GetExcelFilePath(path, sheetName[i], headers); err != nil {
+			log.Fatalf(`unable to parse file, error: %s`, err)
+		}
+		results = append(results, result)
+	}
+
+	rawses := make([][]DataString, 10)
+
+	for i, val := range results {
+		var raws []DataString
+		for _, v := range val {
+			result, _ := json.Marshal(v)
+
+			var data DataString
+
+			if err := json.Unmarshal(result, &data); err != nil {
+				panic("error unmarshaling")
+			}
+
+			raws = append(raws, data)
+		}
+		rawses[i] = raws
 	}
 
 	res := DataT{
@@ -85,16 +99,16 @@ func main() {
 	}
 	wg := &sync.WaitGroup{}
 	wg.Add(10)
-	go helper(d.Dev1, &res.Dev1, wg)
-	go helper(d.Dev2, &res.Dev2, wg)
-	go helper(d.Dev3, &res.Dev3, wg)
-	go helper(d.Dev4, &res.Dev4, wg)
-	go helper(d.Dev5, &res.Dev5, wg)
-	go helper(d.Dev6, &res.Dev6, wg)
-	go helper(d.Dev7, &res.Dev7, wg)
-	go helper(d.Dev8, &res.Dev8, wg)
-	go helper(d.Dev9, &res.Dev9, wg)
-	go helper(d.Dev10, &res.Dev10, wg)
+	go helper(rawses[0], &res.Dev1, wg)
+	go helper(rawses[1], &res.Dev2, wg)
+	go helper(rawses[2], &res.Dev3, wg)
+	go helper(rawses[3], &res.Dev4, wg)
+	go helper(rawses[4], &res.Dev5, wg)
+	go helper(rawses[5], &res.Dev6, wg)
+	go helper(rawses[6], &res.Dev7, wg)
+	go helper(rawses[7], &res.Dev8, wg)
+	go helper(rawses[8], &res.Dev9, wg)
+	go helper(rawses[9], &res.Dev10, wg)
 	wg.Wait()
 
 	bres, err := json.Marshal(&res)
@@ -105,34 +119,33 @@ func main() {
 	if err := os.WriteFile("res.json", bres, 0644); err != nil {
 		fmt.Println("errored due to: ", err.Error())
 	}
-
 }
 
 func helper(d []DataString, dev *[]DataTyped, wg *sync.WaitGroup) {
 	defer wg.Done()
-	for _, v := range d {
-		latitude, _ := strconv.ParseFloat(v.Latitude, 64)
-		longitude, _ := strconv.ParseFloat(v.Longitude, 64)
-		altitude, _ := strconv.ParseFloat(v.Altitude, 64)
-		ts, _ := strconv.ParseInt(v.Timestamp, 10, 64)
-		ha, _ := strconv.ParseFloat(v.HorizontalAccuracy, 64)
-		va, _ := strconv.ParseFloat(v.VerticalAccuracy, 64)
+	for i := range d {
+		latitude, _ := strconv.ParseFloat(d[i].Latitude, 64)
+		longitude, _ := strconv.ParseFloat(d[i].Longitude, 64)
+		altitude, _ := strconv.ParseFloat(d[i].Altitude, 64)
+		ts, _ := strconv.ParseFloat(d[i].Timestamp, 64)
+		ha, _ := strconv.ParseFloat(d[i].HorizontalAccuracy, 64)
+		va, _ := strconv.ParseFloat(d[i].VerticalAccuracy, 64)
 
-		ca, _ := strconv.ParseFloat(v.ConfidenceInLocationAccuracy, 64)
+		ca, _ := strconv.ParseFloat(d[i].ConfidenceInLocationAccuracy, 64)
 
 		var identifier *string
-		if v.Identifier != "null" {
-			identifier = &v.Identifier
-		}
-
-		var floorLabel *string
-		if v.FloorLabel != "null" {
-			floorLabel = &v.FloorLabel
+		if d[i].Identifier != "null" {
+			identifier = &d[i].Identifier
 		}
 
 		var activity *string
-		if v.Activity != "null" {
-			activity = &v.Activity
+		if d[i].Activity != "null" {
+			activity = &d[i].Activity
+		}
+
+		var floorlable *string
+		if d[i].FloorLabel != "null" {
+			floorlable = &d[i].FloorLabel
 		}
 
 		temp := DataTyped{
@@ -140,8 +153,8 @@ func helper(d []DataString, dev *[]DataTyped, wg *sync.WaitGroup) {
 			Longitude:                    longitude,
 			Altitude:                     altitude,
 			Identifier:                   identifier,
+			FloorLabel:                   floorlable,
 			Timestamp:                    ts,
-			FloorLabel:                   floorLabel,
 			HorizontalAccuracy:           ha,
 			VerticalAccuracy:             va,
 			ConfidenceInLocationAccuracy: ca,
