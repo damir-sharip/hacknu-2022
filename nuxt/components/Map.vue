@@ -21,7 +21,6 @@ export default {
             map: null,
             scene: null,
             renderer: null,
-            camera: null,
             loader: null,
             apiOptions: {
                 apiKey: "AIzaSyBKT-QYrE3RY9mY3h_XXMHkfKQBe2jsAWQ",
@@ -50,19 +49,16 @@ export default {
                 mapId: "f25a14a71e327fab",
             },
             IDENTIFIERS: {},
-            ANIMATION_DURATION: 200000,
+            ANIMATION_DURATION: 20000,
             ROUTES: [],
-            ANIMATION_POINTS: [
-                { lat: 53.554473, lng: 10.008226 },
-                { lat: 53.554913, lng: 10.008124 },
-                { lat: 53.554986, lng: 10.007928 },
-                { lat: 53.554775, lng: 10.006363 },
-                { lat: 53.554674, lng: 10.006383 },
-                { lat: 53.554473, lng: 10.006681 },
-                { lat: 53.554363, lng: 10.006971 },
-                { lat: 53.554453, lng: 10.008091 },
-                { lat: 53.554424, lng: 10.008201 },
-                { lat: 53.554473, lng: 10.008226 },
+            COLORS: [
+                "#fd8ab5",
+                "#d30229",
+                "#048ce9",
+                "#00554c",
+                "#25424f",
+                "#3e6e83",
+                "#ceb9ff",
             ],
             tmpVec3: new Vector3(),
         };
@@ -101,10 +97,11 @@ export default {
             return trackLine;
         },
         generateObject(object) {
+            const color =
+                this.COLORS[Math.floor(Math.random() * this.COLORS.length)];
             const mainTargetGeometry = new THREE.SphereGeometry(6, 6, 48);
-            const mainTargetMaterial = new THREE.MeshBasicMaterial({
-                color: "#0031ff",
-            });
+            // const mainTargetGeometry = new THREE.SphereGeometry(25, 25, 48);
+            const mainTargetMaterial = new THREE.MeshBasicMaterial({ color });
             const mainTargetCone = new THREE.Mesh(
                 mainTargetGeometry,
                 mainTargetMaterial
@@ -125,7 +122,7 @@ export default {
             );
 
             const horizontalMinAccuracyGeometry = new THREE.CircleGeometry(
-                this.minMaxAccuracy(this.ANIMATION_POINTS[0], "min")
+                this.minMaxAccuracy(object, "min")
             );
             const horizontalMinAccuracyMaterial = new THREE.MeshBasicMaterial({
                 color: "#003155",
@@ -139,7 +136,7 @@ export default {
             );
 
             const horizontalMaxAccuracyGeometry = new THREE.CircleGeometry(
-                this.minMaxAccuracy(this.ANIMATION_POINTS[0], "max")
+                this.minMaxAccuracy(object, "max")
             );
             const horizontalMaxAccuracyMaterial = new THREE.MeshBasicMaterial({
                 color: "#003177",
@@ -205,6 +202,7 @@ export default {
         },
     },
     async mounted() {
+        console.log(routes.dev4, "dev");
         routes.dev11.map((route) => {
             const temp = {
                 lat: route.latitude,
@@ -218,77 +216,86 @@ export default {
             }
         });
 
+        for (const key in this.IDENTIFIERS) {
+            if (this.IDENTIFIERS[key].length === 1) {
+                this.IDENTIFIERS[key].push(this.IDENTIFIERS[key][0]);
+            }
+        }
+
+        const center = Object.values(this.IDENTIFIERS)[0][0];
+        this.VIEW_PARAMS.center = {
+            lat: center.lat,
+            lng: center.lng,
+        };
+
         const map = await this.initMap();
 
-        const overlay = new ThreeJSOverlayView({
-            lat: 51.46988,
-            lng: -0.45197,
-        });
+        const overlay = new ThreeJSOverlayView(this.VIEW_PARAMS.center);
+
+        // const overlay = new ThreeJSOverlayView({
+        //     lat: 51.46988,
+        //     lng: -0.45197,
+        // });
         const scene = overlay.getScene();
 
         overlay.setMap(map);
 
-        this.ANIMATION_POINTS = routes.dev11.map((route) => {
-            return {
-                lat: route.latitude,
-                lng: route.longitude,
-                altitude: route.altitude,
-            };
-        });
-
         // create a Catmull-Rom spline from the points to smooth out the corners
         // for the animation
 
-        const identifiers = { Bob: {}, Jane: {} };
+        const identifiers = {};
+        for (const key in this.IDENTIFIERS) {
+            identifiers[key] = {};
 
-        const points = this.IDENTIFIERS.Bob.map((p) =>
-            overlay.latLngAltToVector3(p)
-        );
-        const curve = new CatmullRomCurve3(points, false, "catmullrom", 0.2);
-        curve.updateArcLengths();
-        identifiers.Bob.curve = curve; // 
+            const points = this.IDENTIFIERS[key].map((p) =>
+                overlay.latLngAltToVector3(p)
+            );
+            const curve = new CatmullRomCurve3(
+                points,
+                false,
+                "catmullrom",
+                0.2
+            );
+            curve.updateArcLengths();
+            identifiers[key].curve = curve; //
 
-        const points2 = this.IDENTIFIERS.Jane.map((p) =>
-            overlay.latLngAltToVector3(p)
-        );
-        const curve2 = new CatmullRomCurve3(points2, false, "catmullrom", 0.2);
-        curve2.updateArcLengths();
+            const trackLine = this.createTrackLine(curve);
+            identifiers[key].trackLine = trackLine; //
+            scene.add(trackLine);
 
-        const trackLine = this.createTrackLine(curve);
-        identifiers.Bob.trackLine = trackLine; //
-        scene.add(trackLine);
-
-        const obj = this.generateObject(this.IDENTIFIERS.Bob[0]);
-        identifiers.Bob.obj = obj; // 
-        scene.add(obj);
-
-        const trackLine2 = this.createTrackLine(curve2);
-        scene.add(trackLine2);
-
-        const obj2 = this.generateObject(this.IDENTIFIERS.Jane[0]);
-        scene.add(obj2);
+            const obj = this.generateObject(this.IDENTIFIERS[key][0]);
+            identifiers[key].obj = obj; //
+            scene.add(obj);
+        }
 
         overlay.requestRedraw();
 
         // the update-function will animate the object along the spline
         overlay.update = () => {
-            identifiers.Bob.trackLine.material.resolution.copy(overlay.getViewportSize());
-            trackLine2.material.resolution.copy(overlay.getViewportSize());
+            for (const key in this.IDENTIFIERS) {
+                identifiers[key].trackLine.material.resolution.copy(
+                    overlay.getViewportSize()
+                );
 
-            if (!identifiers.Bob.obj) return;
+                if (!identifiers[key].obj) return;
 
-            const animationProgress =
-                (performance.now() % this.ANIMATION_DURATION) /
-                this.ANIMATION_DURATION;
+                const animationProgress =
+                    (performance.now() % this.ANIMATION_DURATION) /
+                    this.ANIMATION_DURATION;
 
-            identifiers.Bob.curve.getPointAt(animationProgress, identifiers.Bob.obj.position);
-            identifiers.Bob.curve.getTangentAt(animationProgress, this.tmpVec3);
-            identifiers.Bob.obj.quaternion.setFromUnitVectors(this.CAR_FRONT, this.tmpVec3);
-
-            curve2.getPointAt(animationProgress, obj2.position);
-            curve2.getTangentAt(animationProgress, this.tmpVec3);
-            obj2.quaternion.setFromUnitVectors(this.CAR_FRONT, this.tmpVec3);
-
+                identifiers[key].curve.getPointAt(
+                    animationProgress,
+                    identifiers[key].obj.position
+                );
+                identifiers[key].curve.getTangentAt(
+                    animationProgress,
+                    this.tmpVec3
+                );
+                identifiers[key].obj.quaternion.setFromUnitVectors(
+                    this.CAR_FRONT,
+                    this.tmpVec3
+                );
+            }
             overlay.requestRedraw();
         };
     },
