@@ -1,0 +1,120 @@
+<template>
+    <div class="map__container d-flex w-100">
+        <div class="navbar">
+            <h2 class="navbar__title">All Traces</h2>
+            {{ tracePoints }}
+            <Multiselect
+                v-model="trace"
+                :options="traces"
+                :allow-empty="false"
+                :taggable="false"
+                class="mb-4"
+            ></Multiselect>
+
+            <h2 class="navbar__title">History</h2>
+            <Spectator class="mb-3" />
+            <div v-for="spectator in spectators" :key="spectator" class="w-100">
+                {{ spectator }}
+                <vue-slider
+                    v-if="show"
+                    :value="tracePoints[spectator]"
+                    @change="handleChange($event, spectator)"
+                    :data="sliderData[spectator].map((_, index) => index + 1)"
+                    :marks="true"
+                    class="custom-vue-slider w-100"
+                />
+            </div>
+            <b-button
+                class="custom-button"
+                variant="light"
+                @click="togglePlay"
+                >{{ isPlay ? "Stop" : "Play" }}</b-button
+            >
+
+            <Xlsx class="mt-2" />
+        </div>
+        <div class="map">
+            <Map
+                v-if="showMap"
+                :trace="trace"
+                :duration="duration"
+                :traceDurations="traceDurations"
+                :isPlay="isPlay"
+            />
+        </div>
+    </div>
+</template>
+
+<script>
+import { mapGetters } from "vuex";
+
+export default {
+    name: "IndexPage",
+    data() {
+        return {
+            trace: "dev11",
+            show: false,
+            showMap: true,
+            duration: 18000,
+            isPlay: false,
+            tracePoints: {},
+            sliderData: {},
+            tracePoint: 0,
+            traceDurations: {},
+        };
+    },
+    computed: {
+        ...mapGetters({
+            routes: "routes/routes",
+            spectators: "spectator/spectators",
+            identifiers: "spectator/identifiers",
+        }),
+        traces() {
+            return Object.keys(this.routes || {});
+        },
+    },
+    watch: {
+        trace() {
+            this.$store.commit("spectator/SET_SPECTATOR", null);
+            this.$root.$emit("resetSpectator");
+            this.showMap = false;
+            // console.log(this.routes[this.trace], "trace")
+            setTimeout(() => (this.showMap = true), 200);
+        },
+        spectators() {
+            this.tracePoints = {};
+            this.traceDurations = {};
+            this.spectators.forEach((spectator) => {
+                this.tracePoints[spectator] = 0;
+                this.traceDurations[spectator] = 0;
+            });
+        },
+        identifiers() {
+            this.sliderData = {};
+            for (const key in this.identifiers) {
+                let timestamps = this.identifiers[key].map(
+                    (point) => point?.timestamp
+                );
+                this.sliderData[key] = timestamps.filter((item) => !!item);
+            }
+        },
+    },
+    mounted() {
+        setTimeout(() => {
+            this.show = true;
+        }, 400);
+    },
+    methods: {
+        togglePlay() {
+            this.isPlay = !this.isPlay;
+        },
+        handleChange(value, spectator) {
+            this.tracePoints[spectator] = value;
+            const max = this.sliderData[spectator].length;
+            console.log(value, this.duration, max)
+            this.traceDurations[spectator] = (value * this.duration) / max;
+            console.log(this.traceDurations);
+        },
+    },
+};
+</script>
