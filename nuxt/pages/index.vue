@@ -1,8 +1,10 @@
 <template>
     <div class="map__container d-flex w-100">
-        <div class="navbar">
+        <div class="navbar align-items-start">
+            <div class="custom-logo mb-4">
+                <img src="~/assets/images/logo.svg" />
+            </div>
             <h2 class="navbar__title">All Traces</h2>
-            {{ tracePoints }}
             <Multiselect
                 v-model="trace"
                 :options="traces"
@@ -12,35 +14,21 @@
             ></Multiselect>
 
             <h2 class="navbar__title">History</h2>
-            <Spectator class="mb-3" />
-            <div v-for="spectator in spectators" :key="spectator" class="w-100">
-                {{ spectator }}
-                <vue-slider
-                    v-if="show"
-                    :value="tracePoints[spectator]"
-                    @change="handleChange($event, spectator)"
-                    :data="sliderData[spectator].map((_, index) => index + 1)"
-                    :marks="true"
-                    class="custom-vue-slider w-100"
-                />
-            </div>
-            <b-button
-                class="custom-button"
-                variant="light"
-                @click="togglePlay"
-                >{{ isPlay ? "Stop" : "Play" }}</b-button
-            >
-
-            <Xlsx class="mt-2" />
-        </div>
-        <div class="map">
-            <Map
-                v-if="showMap"
-                :trace="trace"
-                :duration="duration"
-                :traceDurations="traceDurations"
-                :isPlay="isPlay"
+            <vue-slider
+                v-if="show"
+                v-model="tracePoint"
+                :max="duration"
+                class="custom-vue-slider w-100"
             />
+            <b-spinner
+                v-else
+                variant="light"
+                class="my-4"
+                label="Loading..."
+            ></b-spinner>
+            <b-button class="custom-button" variant="light">Start</b-button>
+            <Spectator />
+            <Xlsx class="mt-2" />
         </div>
     </div>
 </template>
@@ -53,21 +41,16 @@ export default {
     data() {
         return {
             trace: "dev11",
+            tracePoint: 0,
+            traceLabes: ["A", "B", "C", "D"],
             show: false,
             showMap: true,
-            duration: 18000,
-            isPlay: false,
-            tracePoints: {},
-            sliderData: {},
-            tracePoint: 0,
-            traceDurations: {},
+            duration: 10000000000000000,
         };
     },
     computed: {
         ...mapGetters({
             routes: "routes/routes",
-            spectators: "spectator/spectators",
-            identifiers: "spectator/identifiers",
         }),
         traces() {
             return Object.keys(this.routes || {});
@@ -75,46 +58,15 @@ export default {
     },
     watch: {
         trace() {
-            this.$store.commit("spectator/SET_SPECTATOR", null);
-            this.$root.$emit("resetSpectator");
             this.showMap = false;
             // console.log(this.routes[this.trace], "trace")
             setTimeout(() => (this.showMap = true), 200);
-        },
-        spectators() {
-            this.tracePoints = {};
-            this.traceDurations = {};
-            this.spectators.forEach((spectator) => {
-                this.tracePoints[spectator] = 0;
-                this.traceDurations[spectator] = 0;
-            });
-        },
-        identifiers() {
-            this.sliderData = {};
-            for (const key in this.identifiers) {
-                let timestamps = this.identifiers[key].map(
-                    (point) => point?.timestamp
-                );
-                this.sliderData[key] = timestamps.filter((item) => !!item);
-            }
         },
     },
     mounted() {
         setTimeout(() => {
             this.show = true;
         }, 400);
-    },
-    methods: {
-        togglePlay() {
-            this.isPlay = !this.isPlay;
-        },
-        handleChange(value, spectator) {
-            this.tracePoints[spectator] = value;
-            const max = this.sliderData[spectator].length;
-            console.log(value, this.duration, max)
-            this.traceDurations[spectator] = (value * this.duration) / max;
-            console.log(this.traceDurations);
-        },
     },
 };
 </script>
