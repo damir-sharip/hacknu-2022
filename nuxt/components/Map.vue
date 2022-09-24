@@ -11,16 +11,15 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Line2 } from "three/examples/jsm/lines/Line2.js";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { LineGeometry } from "three/examples/jsm/lines/LineGeometry.js";
-
+import metaData from "~/helpers/metaData";
 import ThreeJSOverlayView from "@ubilabs/threejs-overlay-view";
 
 export default {
   data() {
     return {
+      metaData,
       map: null,
       scene: null,
-      renderer: null,
-      camera: null,
       loader: null,
       apiOptions: {
         apiKey: "AIzaSyBKT-QYrE3RY9mY3h_XXMHkfKQBe2jsAWQ",
@@ -33,7 +32,7 @@ export default {
         version: "beta",
       },
       VIEW_PARAMS: {
-        center: { lat: 51.50843075, lng: -0.09858508 },
+        center: { lat: 53.554486, lng: 10.007479 },
         zoom: 18,
         heading: 40,
         tilt: 65,
@@ -42,52 +41,22 @@ export default {
 
       ANIMATION_DURATION: 12000,
       ANIMATION_POINTS: [
-        {
-          lat: 51.50843075,
-          lng: -0.098585086,
-        },
-        {
-          lat: 51.50817223,
-          lng: -0.09859787,
-        },
-        {
-          lat: 51.50840261,
-          lng: -0.098512051,
-        },
-        {
-          lat: 51.5086788,
-          lng: -0.09849205,
-        },
-        {
-          lat: 51.50917358,
-          lng: -0.098467999,
-        },
-        {
-          lat: 51.50959378,
-          lng: -0.098424099,
-        },
-        {
-          lat: 51.51008767,
-          lng: -0.09837941,
-        },
-        {
-          lat: 51.51052555,
-          lng: -0.098353134,
-        },
-        {
-          lat: 51.51085497,
-          lng: -0.098416265,
-        },
-        {
-          lat: 51.51116061,
-          lng: -0.098394436,
-        },
+        { lat: 53.554473, lng: 10.008226 },
+        { lat: 53.554913, lng: 10.008124 },
+        { lat: 53.554986, lng: 10.007928 },
+        { lat: 53.554775, lng: 10.006363 },
+        { lat: 53.554674, lng: 10.006383 },
+        { lat: 53.554473, lng: 10.006681 },
+        { lat: 53.554363, lng: 10.006971 },
+        { lat: 53.554453, lng: 10.008091 },
+        { lat: 53.554424, lng: 10.008201 },
+        { lat: 53.554473, lng: 10.008226 },
       ],
       tmpVec3: new Vector3(),
       dev1: [
         {
-          latitude: 51.50843075,
-          longitude: -0.098585086,
+          latitude: 53.554486,
+          longitude: 10.007479,
           altitude: 0,
           identifier: null,
           timestamp: 4875,
@@ -155,9 +124,7 @@ export default {
       //     mainTargetMaterial
       //   );
 
-      const horizontalAccuracyGeometry = new THREE.CircleGeometry(
-        20
-      );
+      const horizontalAccuracyGeometry = new THREE.CircleGeometry(20);
       const horizontalAccuracyMaterial = new THREE.MeshBasicMaterial({
         color: "#003133",
         transparent: true,
@@ -169,9 +136,7 @@ export default {
         horizontalAccuracyMaterial
       );
 
-      const horizontalMinAccuracyGeometry = new THREE.CircleGeometry(
-        19
-      );
+      const horizontalMinAccuracyGeometry = new THREE.CircleGeometry(19);
       const horizontalMinAccuracyMaterial = new THREE.MeshBasicMaterial({
         color: "#003155",
         transparent: true,
@@ -183,9 +148,7 @@ export default {
         horizontalMinAccuracyMaterial
       );
 
-      const horizontalMaxAccuracyGeometry = new THREE.CircleGeometry(
-        21
-      );
+      const horizontalMaxAccuracyGeometry = new THREE.CircleGeometry(21);
       const horizontalMaxAccuracyMaterial = new THREE.MeshBasicMaterial({
         color: "#003177",
         transparent: true,
@@ -245,7 +208,11 @@ export default {
   },
   async mounted() {
     const map = await this.initMap();
-
+    const infowindow = new google.maps.InfoWindow();
+    const marker = new google.maps.Marker({
+      map,
+      position: { lat: 53.554486, lng: 10.007479 },
+    });
     const overlay = new ThreeJSOverlayView({ lat: 53.554486, lng: 10.007479 });
     const scene = overlay.getScene();
 
@@ -263,7 +230,11 @@ export default {
     scene.add(trackLine);
 
     const obj = this.generateObject(this.dev1);
-    console.log(obj, "obj");
+    infowindow.setContent(this.metaData);
+    console.log(google.maps, "google.maps");
+    google.maps.event.addListener(obj, "click", () => {
+      infowindow.open(map, obj);
+    });
     scene.add(obj);
 
     overlay.requestRedraw();

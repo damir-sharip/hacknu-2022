@@ -1,78 +1,56 @@
 <template>
-  <div class="d-flex w-100">
+  <div class="map__container d-flex w-100">
     <div class="navbar">
       <h2 class="navbar__title mb-4">All Traces</h2>
-      <b-button class="custom-button" v-for="btn in 10"
-        >Trace {{ btn }}</b-button
-      >
+      <Multiselect
+        v-model="trace"
+        :options="options.traces"
+        :allow-empty="false"
+        :taggable="false"
+      ></Multiselect>
+      <vue-slider
+        v-if="show"
+        class="custom-vue-slider w-100"
+        :data="traceLabes"
+        v-model="tracePoint"
+        :marks="true"
+      />
+      <b-spinner
+        v-else
+        variant="light"
+        class="my-4"
+        label="Loading..."
+      ></b-spinner>
+      <b-button class="custom-button" variant="light">Start</b-button>
+      <div class="d-flex mt-2">
+        <h3>Info about current trace</h3>
+      </div>
     </div>
     <div class="map">
       <Map />
     </div>
-    <div class="navbar"></div>
   </div>
 </template>
 
 <script>
+import options from "~/helpers/options";
+
 export default {
   name: "IndexPage",
+  data() {
+    return {
+      options,
+      trace: "dev1",
+      tracePoint: "B",
+      traceLabes: ["A", "B", "C", "D"],
+      show: false,
+    };
+  },
+  mounted() {
+    console.log(options, "options");
+    setTimeout(() => {
+      this.show = true;
+    }, 400);
+  },
 };
 </script>
-
-<style>
-Result Skip Results Iframe EDIT ON html,
-body {
-  width: 100%;
-  height: 100%;
-}
-
-body {
-  background: linear-gradient(-45deg, #4285f4, #34a854, #fbbc05, #ea4335);
-  background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
-}
-
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.map {
-  width: 70%;
-}
-
-.navbar {
-  width: 15%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.navbar__title {
-    color: white;
-  }
-
-.custom-button {
-  min-width: 100px;
-  margin-bottom: 12px;
-  background-color: rgb(255, 255, 255);
-  border: rgb(255, 255, 255);
-  color: black;
-}
-
-.custom-button:hover {
-    background-color: black !important;
-    color: white !important;
-}
-
-h2 {
-  color: green;
-}
-</style>
