@@ -4,6 +4,7 @@
             @change="handleFile"
             placeholder="Choose file"
             drop-placeholder="Drop file here..."
+            class="custom-upload-file w-100"
         ></b-form-file>
     </div>
 </template>
