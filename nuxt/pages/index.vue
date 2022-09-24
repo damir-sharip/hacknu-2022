@@ -17,7 +17,6 @@
                 :max="duration"
                 class="custom-vue-slider w-100"
             />
-
             <b-spinner
                 v-else
                 variant="light"
@@ -25,7 +24,7 @@
                 label="Loading..."
             ></b-spinner>
             <b-button class="custom-button" variant="light">Start</b-button>
-
+            <Spectator />
             <Xlsx class="mt-2" />
         </div>
         <div class="map">

@@ -73,6 +73,7 @@ export default {
     computed: {
         ...mapGetters({
             routes: "routes/routes",
+            spectator: "spectator/spectator",
         }),
     },
     methods: {
@@ -266,6 +267,7 @@ export default {
                     this.IDENTIFIERS[key].push(this.IDENTIFIERS[key][0]);
                 }
             }
+            this.$store.commit("spectator/SET_SPECTATORS", Object.keys(this.IDENTIFIERS));
 
             const center = Object.values(this.IDENTIFIERS)[0][0];
             this.VIEW_PARAMS.center = {
@@ -341,6 +343,17 @@ export default {
                         this.tmpVec3
                     );
                 }
+                if (this.spectator) {
+                    // move map camera to follow the object along the spline
+                    // console.log(map)
+                    map.setCenter(
+                        overlay.vector3ToLatLngAlt(
+                            identifiers[this.spectator].obj.position
+                        )
+                    );
+                }
+                
+                // console.log(overlay/)
                 overlay.requestRedraw();
             };
         },
