@@ -45,19 +45,34 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   padding: 12px !important;
+  overflow-y: auto !important;
 }
 
 .navbar__title {
-  color: white;
+  color: linear-gradient(-45deg, #4285f4, #34a854, #fbbc05, #ea4335) !important;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .custom-button {
-  min-width: 100px;
-  width: 100%;
   margin-bottom: 12px;
   background-color: #5392f5;
   border: #5392f5;
   color: white;
+  transition: background-color 0.25s ease-in-out;
+  border-radius: 12px !important;
+  min-width: 220px;
 }
 
 .custom-button:hover {
@@ -66,9 +81,9 @@ body {
   color: white;
 }
 
-h2, h3 {
-  color: #e8eaed !important;
-}
+/* h2, h3 {
+  color: black !important;
+} */
 
 .multiselect__tags {
   font-size: 19px;
