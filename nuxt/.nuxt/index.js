@@ -12,15 +12,10 @@ import { setContext, getLocation, getRouteData, normalizeError } from './utils'
 
 /* Plugins */
 
-
-import nuxt_plugin_plugin_54276f6f from 'nuxt_plugin_plugin_54276f6f' // Source: ./components/plugin.js (mode: 'all')
-import nuxt_plugin_bootstrapvue_409fdb98 from 'nuxt_plugin_bootstrapvue_409fdb98' // Source: ./bootstrap-vue.js (mode: 'all')
-import nuxt_plugin_vueslider_0ba79204 from 'nuxt_plugin_vueslider_0ba79204' // Source: ../plugins/vue-slider (mode: 'all')
-import nuxt_plugin_vuemultiselect_f0c5f110 from 'nuxt_plugin_vuemultiselect_f0c5f110' // Source: ../plugins/vue-multiselect (mode: 'all')
-
 import nuxt_plugin_plugin_49e3ef02 from 'nuxt_plugin_plugin_49e3ef02' // Source: ./components/plugin.js (mode: 'all')
 import nuxt_plugin_bootstrapvue_f62d5972 from 'nuxt_plugin_bootstrapvue_f62d5972' // Source: ./bootstrap-vue.js (mode: 'all')
-
+import nuxt_plugin_vueslider_0ba79204 from 'nuxt_plugin_vueslider_0ba79204' // Source: ../plugins/vue-slider (mode: 'all')
+import nuxt_plugin_vuemultiselect_f0c5f110 from 'nuxt_plugin_vuemultiselect_f0c5f110' // Source: ../plugins/vue-multiselect (mode: 'all')
 
 // Component: <ClientOnly>
 Vue.component(ClientOnly.name, ClientOnly)

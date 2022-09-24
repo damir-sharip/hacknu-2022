@@ -16,6 +16,7 @@ import ThreeJSOverlayView from "@ubilabs/threejs-overlay-view";
 import routes from "~/static/routes";
 
 export default {
+    props: ["trace"],
     data() {
         return {
             map: null,
@@ -62,6 +63,11 @@ export default {
             ],
             tmpVec3: new Vector3(),
         };
+    },
+    watch: {
+        trace() {
+            this.launch();
+        },
     },
     methods: {
         async initMap() {
@@ -200,114 +206,116 @@ export default {
                 );
             }
         },
+        async launch() {
+            routes[this.trace].map((route) => {
+                const temp = {
+                    lat: route.latitude,
+                    lng: route.longitude,
+                    altitude: route.altitude,
+                };
+                if (this.IDENTIFIERS.hasOwnProperty(route.identifier)) {
+                    this.IDENTIFIERS[route.identifier].push(temp);
+                } else {
+                    this.IDENTIFIERS[route.identifier] = [temp];
+                }
+            });
+
+            for (const key in this.IDENTIFIERS) {
+                if (this.IDENTIFIERS[key].length === 1) {
+                    this.IDENTIFIERS[key].push(this.IDENTIFIERS[key][0]);
+                }
+            }
+
+            const center = Object.values(this.IDENTIFIERS)[0][0];
+            this.VIEW_PARAMS.center = {
+                lat: center.lat,
+                lng: center.lng,
+            };
+
+            const map = await this.initMap();
+
+            const overlay = new ThreeJSOverlayView(this.VIEW_PARAMS.center);
+
+            // const overlay = new ThreeJSOverlayView({
+            //     lat: 51.46988,
+            //     lng: -0.45197,
+            // });
+            const scene = overlay.getScene();
+
+            overlay.setMap(map);
+
+            // create a Catmull-Rom spline from the points to smooth out the corners
+            // for the animation
+
+            const identifiers = {};
+            for (const key in this.IDENTIFIERS) {
+                identifiers[key] = {};
+
+                const points = this.IDENTIFIERS[key].map((p) =>
+                    overlay.latLngAltToVector3(p)
+                );
+                const curve = new CatmullRomCurve3(
+                    points,
+                    false,
+                    "catmullrom",
+                    0.2
+                );
+                curve.updateArcLengths();
+                identifiers[key].curve = curve; //
+
+                const trackLine = this.createTrackLine(curve);
+                identifiers[key].trackLine = trackLine; //
+                scene.add(trackLine);
+
+                const obj = this.generateObject(this.IDENTIFIERS[key][0]);
+                identifiers[key].obj = obj; //
+                scene.add(obj);
+            }
+
+            overlay.requestRedraw();
+
+            // the update-function will animate the object along the spline
+            overlay.update = () => {
+                for (const key in this.IDENTIFIERS) {
+                    identifiers[key].trackLine.material.resolution.copy(
+                        overlay.getViewportSize()
+                    );
+
+                    if (!identifiers[key].obj) return;
+
+                    const animationProgress =
+                        (performance.now() % this.ANIMATION_DURATION) /
+                        this.ANIMATION_DURATION;
+
+                    identifiers[key].curve.getPointAt(
+                        animationProgress,
+                        identifiers[key].obj.position
+                    );
+                    identifiers[key].curve.getTangentAt(
+                        animationProgress,
+                        this.tmpVec3
+                    );
+                    identifiers[key].obj.quaternion.setFromUnitVectors(
+                        this.CAR_FRONT,
+                        this.tmpVec3
+                    );
+                }
+                overlay.requestRedraw();
+            };
+        },
     },
     async mounted() {
-        console.log(routes.dev4, "dev");
-        routes.dev11.map((route) => {
-            const temp = {
-                lat: route.latitude,
-                lng: route.longitude,
-                altitude: route.altitude,
-            };
-            if (this.IDENTIFIERS.hasOwnProperty(route.identifier)) {
-                this.IDENTIFIERS[route.identifier].push(temp);
-            } else {
-                this.IDENTIFIERS[route.identifier] = [temp];
-            }
-        });
-
-        for (const key in this.IDENTIFIERS) {
-            if (this.IDENTIFIERS[key].length === 1) {
-                this.IDENTIFIERS[key].push(this.IDENTIFIERS[key][0]);
-            }
-        }
-
-        const center = Object.values(this.IDENTIFIERS)[0][0];
-        this.VIEW_PARAMS.center = {
-            lat: center.lat,
-            lng: center.lng,
-        };
-
-        const map = await this.initMap();
-
-        const overlay = new ThreeJSOverlayView(this.VIEW_PARAMS.center);
-
-        // const overlay = new ThreeJSOverlayView({
-        //     lat: 51.46988,
-        //     lng: -0.45197,
-        // });
-        const scene = overlay.getScene();
-
-        overlay.setMap(map);
-
-        // create a Catmull-Rom spline from the points to smooth out the corners
-        // for the animation
-
-        const identifiers = {};
-        for (const key in this.IDENTIFIERS) {
-            identifiers[key] = {};
-
-            const points = this.IDENTIFIERS[key].map((p) =>
-                overlay.latLngAltToVector3(p)
-            );
-            const curve = new CatmullRomCurve3(
-                points,
-                false,
-                "catmullrom",
-                0.2
-            );
-            curve.updateArcLengths();
-            identifiers[key].curve = curve; //
-
-            const trackLine = this.createTrackLine(curve);
-            identifiers[key].trackLine = trackLine; //
-            scene.add(trackLine);
-
-            const obj = this.generateObject(this.IDENTIFIERS[key][0]);
-            identifiers[key].obj = obj; //
-            scene.add(obj);
-        }
-
-        overlay.requestRedraw();
-
-        // the update-function will animate the object along the spline
-        overlay.update = () => {
-            for (const key in this.IDENTIFIERS) {
-                identifiers[key].trackLine.material.resolution.copy(
-                    overlay.getViewportSize()
-                );
-
-                if (!identifiers[key].obj) return;
-
-                const animationProgress =
-                    (performance.now() % this.ANIMATION_DURATION) /
-                    this.ANIMATION_DURATION;
-
-                identifiers[key].curve.getPointAt(
-                    animationProgress,
-                    identifiers[key].obj.position
-                );
-                identifiers[key].curve.getTangentAt(
-                    animationProgress,
-                    this.tmpVec3
-                );
-                identifiers[key].obj.quaternion.setFromUnitVectors(
-                    this.CAR_FRONT,
-                    this.tmpVec3
-                );
-            }
-            overlay.requestRedraw();
-        };
+        await this.launch();
     },
 };
 </script>
 
 <style>
 #map {
-  height: 100%;
-  margin: 12px;
-  padding: 0;
-  border-radius: 20px;
-  border: 4px solid white;
+    height: 100%;
+    margin: 12px;
+    padding: 0;
+    border-radius: 20px;
+    border: 4px solid white;
 }
 </style>
