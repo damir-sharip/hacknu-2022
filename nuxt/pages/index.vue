@@ -22,15 +22,11 @@
                 label="Loading..."
             ></b-spinner>
             <b-button class="custom-button" variant="light">Start</b-button>
-            <div class="d-flex mt-2">
-                <h3>Info about current trace</h3>
-            </div>
-            <div class="d-flex mt-2">
-                <Xlsx />
-            </div>
+
+            <Xlsx class="mt-2" />
         </div>
         <div class="map">
-            <Map :trace="trace" />
+            <Map v-if="showMap" :trace="trace" />
         </div>
     </div>
 </template>
@@ -42,10 +38,11 @@ export default {
     name: "IndexPage",
     data() {
         return {
-            trace: "dev1",
+            trace: "dev11",
             tracePoint: "B",
             traceLabes: ["A", "B", "C", "D"],
             show: false,
+            showMap: true,
         };
     },
     computed: {
@@ -54,6 +51,12 @@ export default {
         }),
         traces() {
             return Object.keys(this.routes || {});
+        },
+    },
+    watch: {
+        trace() {
+            this.showMap = false;
+            setTimeout(() => (this.showMap = true), 200);
         },
     },
     mounted() {
