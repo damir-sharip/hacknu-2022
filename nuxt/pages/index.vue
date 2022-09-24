@@ -125,4 +125,11 @@ export default {
 .vue-slider-mark-label {
   display: none !important;
 }
+.vue-slider-mark-step {
+    background-color: white !important;
+    z-index: 999;
+}
+.vue-slider-mark-active > .vue-slider-mark-step {
+    background-color: black !important;
+}
 </style>
