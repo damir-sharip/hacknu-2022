@@ -15,6 +15,7 @@ import { LineGeometry } from "three/examples/jsm/lines/LineGeometry.js";
 import ThreeJSOverlayView from "@ubilabs/threejs-overlay-view";
 import routes from "~/static/routes";
 import { mapGetters } from "vuex";
+import { Text } from "troika-three-text";
 
 export default {
     props: ["trace", "duration", "isPlay", "traceDurations"],
@@ -79,7 +80,6 @@ export default {
     methods: {
         async initMap() {
             const mapDiv = document.getElementById("map");
-            console.log(mapDiv, "mapDiv");
             const apiLoader = new Loader(this.API_OPTIONS);
             await apiLoader.load();
             return new google.maps.Map(mapDiv, {
@@ -254,7 +254,10 @@ export default {
                     lat: route.latitude,
                     lng: route.longitude,
                     altitude: route.altitude,
-                    timestamp: route.timestamp
+                    timestamp: route.timestamp,
+                    identifier: route.identifier,
+                    activity: route.activity,
+                    floor_label: route.floor_label,
                 };
                 if (this.IDENTIFIERS.hasOwnProperty(route.identifier)) {
                     this.IDENTIFIERS[route.identifier].push(temp);
@@ -269,7 +272,10 @@ export default {
                 }
             }
             this.$store.commit("spectator/SET_IDENTIFIERS", this.IDENTIFIERS);
-            this.$store.commit("spectator/SET_SPECTATORS", Object.keys(this.IDENTIFIERS));
+            this.$store.commit(
+                "spectator/SET_SPECTATORS",
+                Object.keys(this.IDENTIFIERS)
+            );
 
             const center = Object.values(this.IDENTIFIERS)[0][0];
             this.VIEW_PARAMS.center = {
@@ -315,6 +321,52 @@ export default {
                 const obj = this.generateObject(this.IDENTIFIERS[key][0]);
                 identifiers[key].obj = obj; //
                 scene.add(obj);
+
+                const textName = new Text();
+                const textStatus = new Text();
+                const floorStatus = new Text();
+                const quaternion = new THREE.Quaternion();
+                quaternion.setFromAxisAngle(
+                    new THREE.Vector3(1, 0, 0),
+                    Math.PI / 2
+                );
+                textName.applyQuaternion(quaternion);
+                textStatus.applyQuaternion(quaternion);
+                floorStatus.applyQuaternion(quaternion);
+                obj.add(textName);
+                obj.add(textStatus);
+                obj.add(floorStatus);
+                textName.text = this.IDENTIFIERS[key][0]?.identifier
+                    ? this.IDENTIFIERS[key][0]?.identifier
+                    : "NO NAME";
+                textName.fontSize = 12;
+                textName.position.z = 70;
+                textName.anchorX = "center";
+                textName.anchorY = "middle";
+                textName.color = "black";
+                textName.outlineBlur = "12%";
+                textName.sync();
+                textStatus.text =
+                    this.IDENTIFIERS[key][0]?.activity === "UNKNOWN"
+                        ? "STAYING"
+                        : this.IDENTIFIERS[key][0]?.activity;
+                textStatus.fontSize = 8;
+                textStatus.position.z = 60;
+                textStatus.anchorX = "center";
+                textStatus.anchorY = "middle";
+                textStatus.color = "black";
+                textName.outlineBlur = "12%";
+                textStatus.sync();
+                floorStatus.text = this.IDENTIFIERS[key][0]?.floor_label
+                    ? "FLOOR: " + this.IDENTIFIERS[key][0]?.floor_label
+                    : "";
+                floorStatus.fontSize = 6;
+                floorStatus.position.z = 52;
+                floorStatus.anchorX = "center";
+                floorStatus.anchorY = "middle";
+                floorStatus.color = "black";
+                floorStatus.outlineBlur = "12%";
+                floorStatus.sync();
             }
 
             overlay.requestRedraw();
@@ -329,7 +381,10 @@ export default {
                     if (!identifiers[key].obj) return;
 
                     const animationProgress =
-                        ((this.isPlay ? performance.now() : this.traceDurations[key]) % this.ANIMATION_DURATION) /
+                        ((this.isPlay
+                            ? performance.now()
+                            : this.traceDurations[key]) %
+                            this.ANIMATION_DURATION) /
                         this.ANIMATION_DURATION;
 
                     identifiers[key].curve.getPointAt(
@@ -347,15 +402,13 @@ export default {
                 }
                 if (this.spectator) {
                     // move map camera to follow the object along the spline
-                    // console.log(map)
                     map.setCenter(
                         overlay.vector3ToLatLngAlt(
                             identifiers[this.spectator].obj.position
                         )
                     );
                 }
-                
-                // console.log(overlay/)
+
                 overlay.requestRedraw();
             };
         },
