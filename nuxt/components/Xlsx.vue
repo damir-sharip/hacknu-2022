@@ -57,7 +57,6 @@ export default {
                     resultingData[sheetName] = dataFiltered;
                 });
 
-                console.log(resultingData);
 
                 this.$store.commit("routes/SET_ROUTES", resultingData);
             };

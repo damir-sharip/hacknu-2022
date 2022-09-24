@@ -80,7 +80,6 @@ export default {
     methods: {
         async initMap() {
             const mapDiv = document.getElementById("map");
-            console.log(mapDiv, "mapDiv");
             const apiLoader = new Loader(this.API_OPTIONS);
             await apiLoader.load();
             return new google.maps.Map(mapDiv, {
@@ -256,6 +255,9 @@ export default {
                     lng: route.longitude,
                     altitude: route.altitude,
                     timestamp: route.timestamp,
+                    identifier: route.identifier,
+                    activity: route.activity,
+                    floor_label: route.floor_label,
                 };
                 if (this.IDENTIFIERS.hasOwnProperty(route.identifier)) {
                     this.IDENTIFIERS[route.identifier].push(temp);
@@ -400,7 +402,6 @@ export default {
                 }
                 if (this.spectator) {
                     // move map camera to follow the object along the spline
-                    // console.log(map)
                     map.setCenter(
                         overlay.vector3ToLatLngAlt(
                             identifiers[this.spectator].obj.position
@@ -408,7 +409,6 @@ export default {
                     );
                 }
 
-                // console.log(overlay/)
                 overlay.requestRedraw();
             };
         },
