@@ -8,3 +8,4 @@ You can directly use them in pages and other components without the need to impo
 
 - `<Map>` | `<map>` (components/Map.vue)
 - `<ProgressBar>` | `<progress-bar>` (components/ProgressBar.vue)
+- `<Xlsx>` | `<xlsx>` (components/Xlsx.vue)

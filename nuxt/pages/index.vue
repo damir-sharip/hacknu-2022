@@ -25,6 +25,10 @@
             <div class="d-flex mt-2">
                 <h3>Info about current trace</h3>
             </div>
+            <div class="d-flex mt-2">
+                <Xlsx />
+            </div>
+
         </div>
         <div class="map">
             <Map :trace="trace" />
