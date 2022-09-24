@@ -28,37 +28,23 @@
 html,
 body {
   width: 100%;
-  padding: 12px !important;
 }
 
 body {
-  background: linear-gradient(-45deg, #4285f4, #34a854, #fbbc05, #ea4335);
-  background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
-}
-
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  background: #f1f3f4;
 }
 
 .map {
   width: 70%;
-  min-height: 600px;
+  min-height: 100vh;
 }
 
 .navbar {
-  /* width: 30%; */
+  width: 30%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  padding: 12px !important;
 }
 
 .navbar__title {
@@ -69,12 +55,19 @@ body {
   min-width: 100px;
   width: 100%;
   margin-bottom: 12px;
-  background-color: rgb(255, 255, 255);
-  border: rgb(255, 255, 255);
+  background-color: #5392f5;
+  border: #5392f5;
+  color: white;
+}
+
+.custom-button:hover {
+  background-color: #3676dd !important;
+  border: #3676dd !important;
+  color: white;
 }
 
 h2, h3 {
-  color: white !important;
+  color: #e8eaed !important;
 }
 
 .multiselect__tags {
@@ -167,7 +160,7 @@ h2, h3 {
   opacity: unset !important;
 }
 
-ƒ.multiselect--disabled .multiselect__tags {
+.multiselect--disabled .multiselect__tags {
   background-color: #e9ecef !important;
 }
 
