@@ -5,6 +5,9 @@
   "ProgressBar": {
     "description": "Auto imported from components/ProgressBar.vue"
   },
+  "Spectator": {
+    "description": "Auto imported from components/Spectator.vue"
+  },
   "Xlsx": {
     "description": "Auto imported from components/Xlsx.vue"
   }
