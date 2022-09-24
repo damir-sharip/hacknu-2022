@@ -5,6 +5,7 @@
         :options="spectators"
         :allow-empty="true"
         :taggable="false"
+        placeholder="select person"
     ></Multiselect>
 </template>
 
