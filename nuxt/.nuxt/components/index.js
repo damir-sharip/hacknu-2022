@@ -1,5 +1,6 @@
 export { default as Map } from '../../components/Map.vue'
 export { default as ProgressBar } from '../../components/ProgressBar.vue'
+export { default as Xlsx } from '../../components/Xlsx.vue'
 
 // nuxt/nuxt.js#8607
 function wrapFunctional(options) {

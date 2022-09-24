@@ -50,7 +50,7 @@ export default {
         mapId: "f25a14a71e327fab",
       },
       IDENTIFIERS: {},
-      ANIMATION_DURATION: 2000000000000,
+      ANIMATION_DURATION: 18000,
       ROUTES: [],
       COLORS: [
         "#fd8ab5",
@@ -132,7 +132,7 @@ export default {
       loader.load("./Xbot.glb", (gltf) => {
         let model = gltf.scene;
 
-        gltf.scene.scale.set(2, 2, 2);
+        gltf.scene.scale.set(25, 25, 25);
         gltf.scene.rotation.x = (180 * Math.PI) / 180;
         gltf.scene.rotation.y = (180 * Math.PI) / 180;
         // gltf.scene.rotation.z = 180 * Math.PI/180;

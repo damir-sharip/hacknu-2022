@@ -4,5 +4,8 @@
   },
   "ProgressBar": {
     "description": "Auto imported from components/ProgressBar.vue"
+  },
+  "Xlsx": {
+    "description": "Auto imported from components/Xlsx.vue"
   }
 }
