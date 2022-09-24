@@ -1,8 +1,10 @@
 <template>
     <div class="map__container d-flex w-100">
         <div class="navbar">
+            <div class="custom-logo mb-4">
+                <img src="~/assets/images/logo.svg" />
+            </div>
             <h2 class="navbar__title">All Traces</h2>
-            {{ tracePoints }}
             <Multiselect
                 v-model="trace"
                 :options="traces"
@@ -78,7 +80,6 @@ export default {
             this.$store.commit("spectator/SET_SPECTATOR", null);
             this.$root.$emit("resetSpectator");
             this.showMap = false;
-            // console.log(this.routes[this.trace], "trace")
             setTimeout(() => (this.showMap = true), 200);
         },
         spectators() {
@@ -99,11 +100,6 @@ export default {
             }
         },
     },
-    mounted() {
-        setTimeout(() => {
-            this.show = true;
-        }, 400);
-    },
     methods: {
         togglePlay() {
             this.isPlay = !this.isPlay;
@@ -111,10 +107,17 @@ export default {
         handleChange(value, spectator) {
             this.tracePoints[spectator] = value;
             const max = this.sliderData[spectator].length;
-            console.log(value, this.duration, max)
             this.traceDurations[spectator] = (value * this.duration) / max;
-            console.log(this.traceDurations);
         },
+    },
+    mounted() {
+        setTimeout(() => (this.show = true), 100);
     },
 };
 </script>
+
+<style>
+.vue-slider-mark-label {
+    display: none !important;
+}
+</style>
