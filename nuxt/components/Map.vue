@@ -17,7 +17,7 @@ import routes from "~/static/routes";
 import { mapGetters } from "vuex";
 
 export default {
-    props: ["trace", "duration", "tracePoint"],
+    props: ["trace", "duration", "isPlay", "traceDurations"],
     data() {
         return {
             map: null,
@@ -254,6 +254,7 @@ export default {
                     lat: route.latitude,
                     lng: route.longitude,
                     altitude: route.altitude,
+                    timestamp: route.timestamp
                 };
                 if (this.IDENTIFIERS.hasOwnProperty(route.identifier)) {
                     this.IDENTIFIERS[route.identifier].push(temp);
@@ -267,6 +268,7 @@ export default {
                     this.IDENTIFIERS[key].push(this.IDENTIFIERS[key][0]);
                 }
             }
+            this.$store.commit("spectator/SET_IDENTIFIERS", this.IDENTIFIERS);
             this.$store.commit("spectator/SET_SPECTATORS", Object.keys(this.IDENTIFIERS));
 
             const center = Object.values(this.IDENTIFIERS)[0][0];
@@ -327,7 +329,7 @@ export default {
                     if (!identifiers[key].obj) return;
 
                     const animationProgress =
-                        (this.tracePoint % this.ANIMATION_DURATION) /
+                        ((this.isPlay ? performance.now() : this.traceDurations[key]) % this.ANIMATION_DURATION) /
                         this.ANIMATION_DURATION;
 
                     identifiers[key].curve.getPointAt(
