@@ -1,5 +1,8 @@
 {
   "Map": {
     "description": "Auto imported from components/Map.vue"
+  },
+  "ProgressBar": {
+    "description": "Auto imported from components/ProgressBar.vue"
   }
 }

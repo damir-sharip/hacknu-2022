@@ -304,8 +304,10 @@ export default {
 
 <style>
 #map {
-    height: 800px;
-    margin: 0;
-    padding: 0;
+  height: 100%;
+  margin: 12px;
+  padding: 0;
+  border-radius: 20px;
+  border: 4px solid white;
 }
 </style>
