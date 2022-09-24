@@ -71,19 +71,11 @@ body {
   margin-bottom: 12px;
   background-color: rgb(255, 255, 255);
   border: rgb(255, 255, 255);
-  color: black;
-  font-weight: bold;
-}
-
-.custom-button:hover {
-  background-color: black !important;
-  color: white !important;
 }
 
 h2, h3 {
   color: white !important;
 }
-
 
 .multiselect__tags {
   font-size: 19px;

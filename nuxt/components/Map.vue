@@ -17,7 +17,7 @@ import routes from "~/static/routes";
 import { mapGetters } from "vuex";
 
 export default {
-    props: ["trace"],
+    props: ["trace", "duration", "tracePoint"],
     data() {
         return {
             map: null,
@@ -327,7 +327,7 @@ export default {
                     if (!identifiers[key].obj) return;
 
                     const animationProgress =
-                        (performance.now() % this.ANIMATION_DURATION) /
+                        (this.tracePoint % this.ANIMATION_DURATION) /
                         this.ANIMATION_DURATION;
 
                     identifiers[key].curve.getPointAt(
@@ -359,6 +359,7 @@ export default {
         },
     },
     async mounted() {
+        this.ANIMATION_DURATION = this.duration || 18000;
         await this.launch();
     },
 };
