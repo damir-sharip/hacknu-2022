@@ -50,7 +50,7 @@ export default {
         mapId: "f25a14a71e327fab",
       },
       IDENTIFIERS: {},
-      ANIMATION_DURATION: 20000,
+      ANIMATION_DURATION: 2000000000000,
       ROUTES: [],
       COLORS: [
         "#fd8ab5",
@@ -105,20 +105,34 @@ export default {
     },
     generateObject(object) {
       const color = this.COLORS[Math.floor(Math.random() * this.COLORS.length)];
-      const mainTargetGeometry = new THREE.SphereGeometry(1, 1, 2);
+      // const mainTargetGeometry = new THREE.SphereGeometry(1, 1, 2);
       // const mainTargetGeometry = new THREE.SphereGeometry(25, 25, 48);
-      const mainTargetMaterial = new THREE.MeshBasicMaterial({ color });
+
+      const mainTargetGeometry = new THREE.CircleGeometry(
+        object.horizontal_accuracy || 0,
+        32
+      );
+      const mainTargetMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffff00,
+      });
       const mainTargetCone = new THREE.Mesh(
         mainTargetGeometry,
         mainTargetMaterial
       );
+      // scene.add(circle);
+
+      // const mainTargetMaterial = new THREE.MeshBasicMaterial({ color });
+      // const mainTargetCone = new THREE.Mesh(
+      //   mainTargetGeometry,
+      //   mainTargetMaterial
+      // );
 
       const loader = new GLTFLoader();
 
       loader.load("./Xbot.glb", (gltf) => {
         let model = gltf.scene;
 
-        gltf.scene.scale.set(10, 10, 10);
+        gltf.scene.scale.set(2, 2, 2);
         gltf.scene.rotation.x = (180 * Math.PI) / 180;
         gltf.scene.rotation.y = (180 * Math.PI) / 180;
         // gltf.scene.rotation.z = 180 * Math.PI/180;
