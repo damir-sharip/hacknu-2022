@@ -16,15 +16,22 @@
             <h2 class="navbar__title">History</h2>
             <Spectator class="mb-3" />
             <div v-for="spectator in spectators" :key="spectator" class="w-100">
-                {{ spectator }}
-                <vue-slider
-                    v-if="show"
-                    :value="tracePoints[spectator]"
-                    @change="handleChange($event, spectator)"
-                    :data="sliderData[spectator].map((_, index) => index + 1)"
-                    :marks="true"
-                    class="custom-vue-slider w-100"
-                />
+                <div
+                    v-if="
+                        show &&
+                        sliderData[spectator].length >= 2 &&
+                        sliderData[spectator][0] !== sliderData[spectator][1]
+                    "
+                >
+                    {{ spectator }}
+                    <vue-slider
+                        :value="tracePoints[spectator]"
+                        @change="handleChange($event, spectator)"
+                        :data="sliderData[spectator].map((_, index) => index)"
+                        :marks="true"
+                        class="custom-vue-slider w-100"
+                    />
+                </div>
             </div>
             <b-button
                 class="custom-button"
@@ -86,8 +93,8 @@ export default {
             this.tracePoints = {};
             this.traceDurations = {};
             this.spectators.forEach((spectator) => {
-                this.tracePoints[spectator] = 0;
-                this.traceDurations[spectator] = 0;
+                this.tracePoints[spectator] = null;
+                this.traceDurations[spectator] = null;
             });
         },
         identifiers() {
