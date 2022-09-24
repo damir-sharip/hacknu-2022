@@ -4,7 +4,7 @@
             <h2 class="navbar__title mb-4">All Traces</h2>
             <Multiselect
                 v-model="trace"
-                :options="options.traces"
+                :options="traces"
                 :allow-empty="false"
                 :taggable="false"
             ></Multiselect>
@@ -28,7 +28,6 @@
             <div class="d-flex mt-2">
                 <Xlsx />
             </div>
-
         </div>
         <div class="map">
             <Map :trace="trace" />
@@ -37,21 +36,27 @@
 </template>
 
 <script>
-import options from "~/helpers/options";
+import { mapGetters } from "vuex";
 
 export default {
     name: "IndexPage",
     data() {
         return {
-            options,
-            trace: "dev11",
+            trace: "dev1",
             tracePoint: "B",
             traceLabes: ["A", "B", "C", "D"],
             show: false,
         };
     },
+    computed: {
+        ...mapGetters({
+            routes: "routes/routes",
+        }),
+        traces() {
+            return Object.keys(this.routes || {});
+        },
+    },
     mounted() {
-        console.log(options, "options");
         setTimeout(() => {
             this.show = true;
         }, 400);

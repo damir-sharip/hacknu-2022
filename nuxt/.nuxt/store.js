@@ -17,14 +17,14 @@ let store = {};
   // Enforce store modules
   store.modules = store.modules || {}
 
-  resolveStoreModules(require('../store/data.js'), 'data.js')
+  resolveStoreModules(require('../store/routes.js'), 'routes.js')
 
   // If the environment supports hot reloading...
 
   if (process.client && module.hot) {
     // Whenever any Vuex module is updated...
     module.hot.accept([
-      '../store/data.js',
+      '../store/routes.js',
     ], () => {
       // Update `root.modules` with the latest definitions.
       updateModules()
