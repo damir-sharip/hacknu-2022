@@ -1,6 +1,7 @@
 export const state = () => ({
     spectator: null,
     spectators: [],
+    identifiers: {}
 })
 
 
@@ -11,6 +12,9 @@ export const getters = {
     spectators(state) {
         return state.spectators;
     },
+    identifiers(state) {
+        return state.identifiers;
+    }
 }
 
 export const mutations = {
@@ -19,5 +23,8 @@ export const mutations = {
     },
     SET_SPECTATORS(state, spectators) {
         state.spectators = spectators;
+    },
+    SET_IDENTIFIERS(state, identifiers) {
+        state.identifiers = identifiers;
     }
 }

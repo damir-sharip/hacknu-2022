@@ -44,6 +44,9 @@ export default {
                         const newRow = {};
                         Object.keys(row).forEach((key) => {
                             newRow[key] = row[key] === "null" ? null : row[key];
+                            // if (key === "identifier" && !newRow[key]) {
+                            //     newRow[key] = "UNKNOWN"
+                            // }
                         });
                         return newRow;
                     });
