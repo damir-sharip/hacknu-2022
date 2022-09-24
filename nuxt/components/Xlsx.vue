@@ -1,6 +1,10 @@
 <template>
     <div>
-        <input type="file" @change="handleFile" />
+        <b-form-file
+            @change="handleFile"
+            placeholder="Choose file"
+            drop-placeholder="Drop file here..."
+        ></b-form-file>
     </div>
 </template>
 
@@ -56,6 +60,3 @@ export default {
     },
 };
 </script>
-
-<style scoped>
-</style>
