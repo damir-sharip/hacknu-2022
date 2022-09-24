@@ -44,14 +44,19 @@ export default {
                         const newRow = {};
                         Object.keys(row).forEach((key) => {
                             newRow[key] = row[key] === "null" ? null : row[key];
+                            if (key === "identifier" && newRow[key] === null) {
+                                newRow[key] = "UNKNOWN";
+                            }
                         });
                         return newRow;
                     });
 
-                    resultingData[sheetName] = dataNull;
+                    const dataFiltered = dataNull.filter((row) => {
+                        return row.latitude && row.longitude;
+                    });
+                    resultingData[sheetName] = dataFiltered;
                 });
 
-                console.log(resultingData);
 
                 this.$store.commit("routes/SET_ROUTES", resultingData);
             };
