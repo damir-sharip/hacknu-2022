@@ -26,28 +26,6 @@ export default {
         apiKey: "AIzaSyBKT-QYrE3RY9mY3h_XXMHkfKQBe2jsAWQ",
         version: "beta",
       },
-      location: {
-        latitude: "35.66093428",
-        longitude: "139.7290334",
-        altitude: "0",
-        identifier: "null",
-        timestamp: "4875",
-        floor_label: "null",
-        horizontal_accuracy: "2.314",
-        vertical_accuracy: "0.612",
-        confidence_in_location_accuracy: "0.6827",
-        activity: "UNKNOWN",
-      },
-      mapOptions: {
-        tilt: 67.5,
-        heading: 0,
-        zoom: 18,
-        center: {
-          lat: 35.66093428,
-          lng: 139.7290334,
-        },
-        mapId: "f25a14a71e327fab",
-      },
       CAR_FRONT: new Vector3(0, 1, 0),
 
       API_OPTIONS: {
@@ -55,7 +33,7 @@ export default {
         version: "beta",
       },
       VIEW_PARAMS: {
-        center: { lat: 53.554486, lng: 10.007479 },
+        center: { lat: 51.50843075, lng: -0.09858508 },
         zoom: 18,
         heading: 40,
         tilt: 65,
@@ -64,22 +42,52 @@ export default {
 
       ANIMATION_DURATION: 12000,
       ANIMATION_POINTS: [
-        { lat: 53.554473, lng: 10.008226 },
-        { lat: 53.554913, lng: 10.008124 },
-        { lat: 53.554986, lng: 10.007928 },
-        { lat: 53.554775, lng: 10.006363 },
-        { lat: 53.554674, lng: 10.006383 },
-        { lat: 53.554473, lng: 10.006681 },
-        { lat: 53.554363, lng: 10.006971 },
-        { lat: 53.554453, lng: 10.008091 },
-        { lat: 53.554424, lng: 10.008201 },
-        { lat: 53.554473, lng: 10.008226 },
+        {
+          lat: 51.50843075,
+          lng: -0.098585086,
+        },
+        {
+          lat: 51.50817223,
+          lng: -0.09859787,
+        },
+        {
+          lat: 51.50840261,
+          lng: -0.098512051,
+        },
+        {
+          lat: 51.5086788,
+          lng: -0.09849205,
+        },
+        {
+          lat: 51.50917358,
+          lng: -0.098467999,
+        },
+        {
+          lat: 51.50959378,
+          lng: -0.098424099,
+        },
+        {
+          lat: 51.51008767,
+          lng: -0.09837941,
+        },
+        {
+          lat: 51.51052555,
+          lng: -0.098353134,
+        },
+        {
+          lat: 51.51085497,
+          lng: -0.098416265,
+        },
+        {
+          lat: 51.51116061,
+          lng: -0.098394436,
+        },
       ],
       tmpVec3: new Vector3(),
       dev1: [
         {
-          latitude: 53.554486,
-          longitude: 10.007479,
+          latitude: 51.50843075,
+          longitude: -0.098585086,
           altitude: 0,
           identifier: null,
           timestamp: 4875,
@@ -125,7 +133,7 @@ export default {
 
       return trackLine;
     },
-    
+
     generateObject(object) {
       const mainTargetGeometry = new THREE.SphereGeometry(6, 6, 48);
       const mainTargetMaterial = new THREE.MeshBasicMaterial({
@@ -136,19 +144,19 @@ export default {
         mainTargetMaterial
       );
 
-    //   const mainTargetGeometry = new THREE.ConeGeometry(5, 20, 32);
-    //   const mainTargetMaterial = new THREE.MeshBasicMaterial({
-    //     color: 0xffff00,
-    //     transparent: true,
-    //     opacity: 0.1,
-    //   });
-    //   const mainTargetCone = new THREE.Mesh(
-    //     mainTargetGeometry,
-    //     mainTargetMaterial
-    //   );
+      //   const mainTargetGeometry = new THREE.ConeGeometry(5, 20, 32);
+      //   const mainTargetMaterial = new THREE.MeshBasicMaterial({
+      //     color: 0xffff00,
+      //     transparent: true,
+      //     opacity: 0.1,
+      //   });
+      //   const mainTargetCone = new THREE.Mesh(
+      //     mainTargetGeometry,
+      //     mainTargetMaterial
+      //   );
 
       const horizontalAccuracyGeometry = new THREE.CircleGeometry(
-        object.horizontal_accuracy
+        20
       );
       const horizontalAccuracyMaterial = new THREE.MeshBasicMaterial({
         color: "#003133",
@@ -162,7 +170,7 @@ export default {
       );
 
       const horizontalMinAccuracyGeometry = new THREE.CircleGeometry(
-        this.minMaxAccuracy(this.dev1, "min")
+        19
       );
       const horizontalMinAccuracyMaterial = new THREE.MeshBasicMaterial({
         color: "#003155",
@@ -176,7 +184,7 @@ export default {
       );
 
       const horizontalMaxAccuracyGeometry = new THREE.CircleGeometry(
-        this.minMaxAccuracy(this.dev1, "max")
+        21
       );
       const horizontalMaxAccuracyMaterial = new THREE.MeshBasicMaterial({
         color: "#003177",
@@ -255,6 +263,7 @@ export default {
     scene.add(trackLine);
 
     const obj = this.generateObject(this.dev1);
+    console.log(obj, "obj");
     scene.add(obj);
 
     overlay.requestRedraw();
@@ -280,8 +289,10 @@ export default {
 
 <style>
 #map {
-  height: 800px;
-  margin: 0;
+  height: 100%;
+  margin: 12px;
   padding: 0;
+  border-radius: 20px;
+  border: 4px solid white;
 }
 </style>
