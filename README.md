@@ -1,6 +1,6 @@
 # HACKNU/2022 - Team B44 - Vizualizr.
 
-Website link should be available on <a href="walrus-app-x2l33.ondigitalocean.app.">here</a>
+Website link should be available on [a link](https://walrus-app-x2l33.ondigitalocean.app/)
 
 # Authors
 
