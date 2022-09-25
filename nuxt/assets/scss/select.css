@@ -1,0 +1,232 @@
+@import "vue-multiselect/dist/vue-multiselect.min.css";
+@import "vue-slider-component/theme/default.css";
+
+.vue-slider-process,
+.vue-slider-dot-handle,
+.vue-slider-dot-tooltip-inner {
+  background-color: white !important;
+  border-color: white !important;
+  color: black !important;
+}
+
+.vue-slider-mark-step {
+    color: black !important;
+    background-color: black !important;
+    background: black !important;
+}
+
+.vue-slider-dot-handle-focus {
+  box-shadow: 0px 0px 1px 2px rgba(255, 130, 103, 0.36);
+}
+
+.custom-vue-slider {
+  margin: 14px 0px;
+  color: black;
+  font-weight: bold;
+}
+
+html,
+body {
+  width: 100%;
+  font-family: 'Montserrat' !important;
+}
+
+body {
+  background: #c8cbcd;
+}
+
+.map {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.navbar {
+  width: 440px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 24px !important;
+  overflow-y: hidden !important;
+  position: absolute;
+  z-index: 2;
+}
+
+.custom-form {
+  padding: 24px;
+  /* background-color: rgba(241, 243, 244, 0.8); */
+  background-color: rgba(217, 217, 225, 0.8);
+  border-radius: 12px;
+  border: 2px solid #99999b;
+  height: 555px;
+  overflow: scroll;
+}
+
+.navbar__title {
+  color: linear-gradient(-45deg, #4285f4, #34a854, #fbbc05, #ea4335) !important;
+  animation: gradient 15s ease infinite;
+  font-weight: bold;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.custom-button {
+  margin-bottom: 12px;
+  background-color: rgb(21, 19, 19);
+  border: rgb(21, 19, 19);
+  color: white;
+  transition: background-color 0.25s ease-in-out;
+  border-radius: 12px !important;
+  width: 100%;
+  font-size: 19px !important;
+}
+
+.custom-button:hover {
+  background-color: black !important;
+  border: black !important;
+  color: white;
+}
+
+.custom-logo {
+  margin-bottom: 42px !important;
+}
+
+.custom-logo img {
+  width: 80% !important;
+}
+
+/* h2, h3 {
+  color: black !important;
+} */
+
+.multiselect__tags {
+  font-size: 19px;
+  font-weight: 400 !important;
+  line-height: 28px;
+  letter-spacing: 0.2px;
+  color: #525c6a !important;
+  background-color: white !important;
+  background-clip: padding-box;
+  border: 1px solid #ced4da !important;
+  border-radius: 5px !important;
+  min-height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.375rem 0.75rem;
+}
+
+.multiselect__placeholder {
+  padding-top: 0 !important;
+  margin-bottom: 0 !important;
+  color: #525c6a !important;
+}
+
+.multiselect__input {
+  margin-bottom: 0 !important;
+}
+
+.multiselect__single {
+  padding-left: 0 !important;
+  padding-top: 4px;
+  margin-bottom: 0 !important;
+}
+
+.multiselect__tag {
+  background-color: #ff8267 !important;
+  margin-bottom: 0 !important;
+}
+
+.multiselect__tag-icon:after {
+  color: #525c6a !important;
+}
+
+.multiselect__tag-icon:hover {
+  background: #ffe074;
+}
+
+.multiselect,
+.multiselect__input,
+.multiselect__single {
+  font-size: 19px !important;
+}
+
+.multiselect__input,
+.multiselect__single {
+  background-color: white !important;
+}
+
+.multiselect__content-wrapper {
+  background-color: white !important;
+  border: 1px solid #ced4da !important;
+}
+
+.mx-input::placeholder {
+  color: #525c6a;
+}
+
+.multiselect__input,
+.mx-calendar-icon,
+.mx-datepicker-btn-confirm,
+.multiselect__option {
+  color: #525c6a !important;
+}
+
+.multiselect__option--highlight,
+.multiselect__option--highlight:after {
+  background: white !important;
+  color: black !important;
+}
+
+.multiselect__error .multiselect__tags {
+  border-color: #dc3545 !important;
+}
+
+.multiselect--disabled .multiselect__select {
+  display: none !important;
+}
+
+.multiselect--disabled {
+  background: unset !important;
+  pointer-events: unset !important;
+  opacity: unset !important;
+}
+
+.multiselect--disabled .multiselect__tags {
+  background-color: #e9ecef !important;
+}
+
+.multiselect--disabled .multiselect__single {
+  background-color: #e9ecef !important;
+}
+
+.vue-slider-rail {
+  background-color: black !important;
+}
+
+.spinner__container {
+  display: flex;
+  justify-content: center;
+  margin: 35px 0px;
+}
+
+.custom-file-input:focus, .custom-file-input:active {
+  border: unset !important;
+  box-shadow: none !important;
+}
+
+.custom-file-input {
+  font-size: 19px !important; 
+  font-family: 'Montserrat' !important;
+  color: #525C6A !important;
+}
+
+.timeline__name {
+  font-size: 24px;
+}
