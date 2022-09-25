@@ -43,3 +43,7 @@ $ npm run generate
 <p align="center">
     <img src="/img/screenshot4.png"/>
 </p>
+
+<p align="center">
+    <img src="/img/screenshot5.png"/>
+</p>
