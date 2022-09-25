@@ -258,6 +258,10 @@ export default {
                     identifier: route.identifier,
                     activity: route.activity,
                     floor_label: route.floor_label,
+                    horizontal_accuracy: route.horizontal_accuracy,
+                    vertical_accuracy: route.vertical_accuracy,
+                    confidence_in_location_accuracy:
+                        route.confidence_in_location_accuracy,
                 };
                 if (this.IDENTIFIERS.hasOwnProperty(route.identifier)) {
                     this.IDENTIFIERS[route.identifier].push(temp);
