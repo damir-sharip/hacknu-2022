@@ -1,5 +1,7 @@
 # HACKNU/2022 - Team B44 - Vizualizr.
 
+Website link should be available on <a href="walrus-app-x2l33.ondigitalocean.app.">here</a>
+
 # Authors
 
 ```
@@ -32,4 +34,12 @@ $ npm run generate
 <p align="center">
     <img src="/img/screenshot1.png" width="300"/>
     <img src="/img/screenshot2.png" width="300"/>
+</p>
+
+<p align="center">
+    <img src="/img/screenshot3.png"/>
+</p>
+
+<p align="center">
+    <img src="/img/screenshot4.png"/>
 </p>
