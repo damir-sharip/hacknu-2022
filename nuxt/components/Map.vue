@@ -64,6 +64,18 @@ export default {
                 "#ceb9ff",
             ],
             tmpVec3: new Vector3(),
+            allActions: [],
+            baseActions: {
+              idle: { weight: 1 },
+              walk: { weight: 0 },
+              run: { weight: 0 }
+            },
+            additiveActions: {
+              sneak_pose: { weight: 0 },
+              sad_pose: { weight: 0 },
+              agree: { weight: 0 },
+              headShake: { weight: 0 }
+            },
         };
     },
     watch: {
@@ -138,8 +150,6 @@ export default {
             const loader = new GLTFLoader();
 
             loader.load("./Xbot.glb", (gltf) => {
-                let model = gltf.scene;
-
                 gltf.scene.scale.set(25, 25, 25);
                 gltf.scene.rotation.x = (180 * Math.PI) / 180;
                 gltf.scene.rotation.y = (180 * Math.PI) / 180;
@@ -151,6 +161,58 @@ export default {
                 );
                 gltf.scene.applyQuaternion(quaternion);
                 mainTargetCone.add(gltf.scene);
+
+                let skeleton = new THREE.SkeletonHelper( gltf.scene );
+                skeleton.visible = false;
+
+                mainTargetCone.add( skeleton );
+
+                const animations = gltf.animations;
+
+                mainTargetCone.animations = gltf.animations;
+                const mixerTape = new THREE.AnimationMixer(gltf.scene);
+                mainTargetCone.xmixer = mixerTape;
+                mainTargetCone.xcurrentBaseAction = "run";
+                mainTargetCone.xclock = new THREE.Clock()
+                mainTargetCone.xallActions = [];
+                mainTargetCone.xadditiveActions = [];
+
+                mainTargetCone.xbaseActions = {
+                  idle: { weight: 1 },
+                  walk: { weight: 0 },
+                  run: { weight: 0 }
+                }
+                mainTargetCone.xadditiveActions = {
+                  sneak_pose: { weight: 0 },
+                  sad_pose: { weight: 0 },
+                  agree: { weight: 0 },
+                  headShake: { weight: 0 }
+                }
+                for ( let i = 0; i !== animations.length; ++ i ) {
+                  let clip = animations[i];
+                  const name = clip.name;
+
+                  if ( mainTargetCone.xbaseActions[ name ] ) {
+                    const action = mainTargetCone.xmixer.clipAction( clip );
+
+                    mainTargetCone.xbaseActions[ name ].action = action;
+                    mainTargetCone.xallActions.push( action );
+                    this.activateAction( action, mainTargetCone );
+                  } else if ( mainTargetCone.xadditiveActions[ name ] ) {
+                    // Make the clip additive and remove the reference frame
+                    THREE.AnimationUtils.makeClipAdditive( clip );
+                    if ( clip.name.endsWith( '_pose' ) ) {
+                      clip = THREE.AnimationUtils.subclip( clip, clip.name, 2, 3, 30 );
+                    }
+                    const action = mainTargetCone.xmixer.clipAction( clip );
+
+                    mainTargetCone.xadditiveActions[ name ].action = action;
+                    mainTargetCone.xallActions.push( action );
+                    this.activateAction( action, mainTargetCone );
+                  }
+                  // console.log(this.allActions)
+                }
+
             });
 
             const horizontalAccuracyGeometry = new THREE.CircleGeometry(
@@ -258,6 +320,9 @@ export default {
                     identifier: route.identifier,
                     activity: route.activity,
                     floor_label: route.floor_label,
+                    horizontal_accuracy: route.horizontal_accuracy,
+                    vertical_accuracy: route.vertical_accuracy,
+                    confidence_in_location_accuracy: route.confidence_in_location_accuracy,
                 };
                 if (this.IDENTIFIERS.hasOwnProperty(route.identifier)) {
                     this.IDENTIFIERS[route.identifier].push(temp);
@@ -399,6 +464,44 @@ export default {
                         this.CAR_FRONT,
                         this.tmpVec3
                     );
+
+                    for ( let i = 0; i !== identifiers[key].obj.animations.length; ++ i ) {
+                      try {
+                        const clip = identifiers[key].obj.xallActions[ i ].getClip();
+                        if (identifiers[key].obj.xbaseActions[ clip.name ] !== undefined) {
+                          identifiers[key].obj.xbaseActions[ clip.name ].weight = identifiers[key].obj.xallActions[ i ].getEffectiveWeight();
+
+                        }
+                        console.log(identifiers[key].obj);
+                        // if clip name is run
+                        // if (clip.name == "run") {
+                        //   this.activateAction(identifiers[key].xbaseActions[ clip.name ], identifiers[key].obj)
+                        // }
+                        // const action = identifiers[key].obj.xallActions[ i ];
+                        // const clip = identifiers[key].obj.xallActions[ i ].getClip();
+                        // // const settings = identifiers[key].obj.xbaseActions[ clip.name ] || identifiers[key].obj.xadditiveActions[ clip.name ];
+                        // const settings = identifiers[key].obj.xbaseActions[ clip.name ];
+                        // identifiers[key].obj.xbaseActions[ clip.name ].weight = identifiers[key].obj.xallActions[ i ].getEffectiveWeight();
+                      } catch (e) {
+                        console.log(e);
+                      }
+
+
+                    }
+
+
+                    // Get the time elapsed since the last frame, used for mixer update
+
+                    const mixerUpdateDelta = identifiers[key].obj.xclock.getDelta();
+
+                    // Update the animation mixer, the stats panel, and render this frame
+                    if (identifiers[key].obj.xmixer) {
+                      identifiers[key].obj.xmixer.update( mixerUpdateDelta );
+                    }
+
+
+                    // console.log(identifiers[key].obj.xmixer);
+
                 }
                 if (this.spectator) {
                     // move map camera to follow the object along the spline
@@ -409,9 +512,28 @@ export default {
                     );
                 }
 
+
+                // requestAnimationFrame( overlay.update );
+
                 overlay.requestRedraw();
             };
         },
+        activateAction( action, object ) {
+          try {
+            const clip = action.getClip();
+            const settings = object.xbaseActions[ clip.name ] || object.xadditiveActions[ clip.name ];
+            this.setWeight( action, settings.weight );
+            action.play();
+          } catch (err) {
+            console.log(err)
+          }
+
+        },
+        setWeight( action, weight ) {
+          action.enabled = true;
+          action.setEffectiveTimeScale( 1 );
+          action.setEffectiveWeight( weight );
+        }
     },
     async mounted() {
         this.ANIMATION_DURATION = this.duration || 18000;
