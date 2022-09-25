@@ -463,7 +463,7 @@ export default {
                   identifiers[key].obj.xallActions[i].getEffectiveWeight();
               }
             } catch (e) {
-              console.log(e);
+            //   console.log(e);
             }
           }
           //   identifiers[key].obj.xbaseActions.run.weight = 1
@@ -497,7 +497,7 @@ export default {
         this.setWeight(action, settings.weight);
         action.play();
       } catch (err) {
-        console.log(err);
+        // console.log(err);
       }
     },
     setWeight(action, weight) {
