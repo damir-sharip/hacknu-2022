@@ -32,8 +32,8 @@ $ npm run generate
 # Screenshots
 
 <p align="center">
-    <img src="/img/screenshot1.png" height="220"/>
-    <img src="/img/screenshot2.png" height="220"/>
+    <img src="/img/screenshot1.png" height="260"/>
+    <img src="/img/screenshot2.png" height="260"/>
 </p>
 
 <p align="center">
